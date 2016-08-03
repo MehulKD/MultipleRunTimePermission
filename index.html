@@ -1,25 +1,45 @@
-<!DOCTYPE html>
-<html lang="en-us">
+<!doctype html>
+<html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Multiple Run Time Permission by Priyanka-Mohanty</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-dark.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
   </head>
   <body>
-    <section class="page-header">
-      <h1 class="project-name">Multiple Run Time Permission</h1>
-      <h2 class="project-tagline"></h2>
-      <a href="https://github.com/Priyanka-Mohanty/MultipleRunTimePermission" class="btn">View on GitHub</a>
-      <a href="https://github.com/Priyanka-Mohanty/MultipleRunTimePermission/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/Priyanka-Mohanty/MultipleRunTimePermission/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
 
-    <section class="main-content">
-      <h1>
+      <header>
+        <h1>Multiple Run Time Permission</h1>
+        <p></p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/Priyanka-Mohanty/MultipleRunTimePermission" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/Priyanka-Mohanty/MultipleRunTimePermission/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/Priyanka-Mohanty/MultipleRunTimePermission/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>
 <a id="requesting-permissions-at-run-time" class="anchor" href="#requesting-permissions-at-run-time" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requesting Permissions at Run Time</h1>
 
 <p>Beginning in Android 6.0 (API level 23), users grant permissions to apps while the app is running, not when they install the app. This approach streamlines the app install process, since the user does not need to grant permissions when they install or update the app. It also gives the user more control over the app's functionality; for example, a user could choose to give a camera app access to the camera but not to the device location. The user can revoke the permissions at any time, by going to the app's Settings screen.</p>
@@ -37,9 +57,24 @@ If the device is running Android 6.0 or higher, and your app's target SDK is 23 
 <h2>
 <a id="note-beginning-with-android-60-api-level-23-users-can-revoke-permissions-from-any-app-at-any-time-even-if-the-app-targets-a-lower-api-level-you-should-test-your-app-to-verify-that-it-behaves-properly-when-its-missing-a-needed-permission-regardless-of-what-api-level-your-app-targets" class="anchor" href="#note-beginning-with-android-60-api-level-23-users-can-revoke-permissions-from-any-app-at-any-time-even-if-the-app-targets-a-lower-api-level-you-should-test-your-app-to-verify-that-it-behaves-properly-when-its-missing-a-needed-permission-regardless-of-what-api-level-your-app-targets" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Note: Beginning with Android 6.0 (API level 23), users can revoke permissions from any app at any time, even if the app targets a lower API level. You should test your app to verify that it behaves properly when it's missing a needed permission, regardless of what API level your app targets</h2>
 
+<p><strong>First,Storing All the permissions in string Array:</strong></p>
+
+<pre><code>`String[] permissions = new String[]{
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.CAMERA,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.CALL_PHONE,
+        Manifest.permission.SEND_SMS,
+        Manifest.permission.ACCESS_NETWORK_STATE,
+        Manifest.permission.INTERNET};`
+</code></pre>
+
 <p><strong>Check For All Permissions at a time</strong></p>
 
-<pre><code>`int result;
+<pre><code>`public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
+
+ int result;
  List&lt;String&gt; listPermissionsNeeded = new ArrayList&lt;&gt;();
  for (String p : permissions) {
  result = ContextCompat.checkSelfPermission(getApplicationContext(), p);
@@ -53,6 +88,25 @@ return false;
 }`
 </code></pre>
 
+<p>In this code, I am calling a method i.e <strong>checkPermissions()</strong> in MainActivity,where i am writing the code for accessing all the permission </p>
+
+<pre><code>`private boolean checkPermissions() {
+    int result;
+    List&lt;String&gt; listPermissionsNeeded = new ArrayList&lt;&gt;();
+    for (String p : permissions) {
+        result = ContextCompat.checkSelfPermission(getApplicationContext(), p);
+        if (result != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(p);
+        }
+    }
+    if (!listPermissionsNeeded.isEmpty()) {
+        ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
+        return false;
+    }
+    return true;
+}`
+</code></pre>
+
 <h1>
 <a id="output" class="anchor" href="#output" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Output:</h1>
 
@@ -62,15 +116,13 @@ return false;
 <img src="https://raw.githubusercontent.com/Priyanka-Mohanty/MultipleRunTimePermission/gh-pages/Images/Screenshot_20160803-120845.png" alt="Fourth Screen">
 <img src="https://raw.githubusercontent.com/Priyanka-Mohanty/MultipleRunTimePermission/gh-pages/Images/Screenshot_20160803-120848.png" alt="Fifth Screen">
 <img src="https://raw.githubusercontent.com/Priyanka-Mohanty/MultipleRunTimePermission/gh-pages/Images/Screenshot_20160803-120854.png" alt="Sixth Screen"></p>
-
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/Priyanka-Mohanty/MultipleRunTimePermission">Multiple Run Time Permission</a> is maintained by <a href="https://github.com/Priyanka-Mohanty">Priyanka-Mohanty</a>.</span>
-
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/Priyanka-Mohanty">Priyanka-Mohanty</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
       </footer>
-
-    </section>
-
-  
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
   </body>
 </html>
