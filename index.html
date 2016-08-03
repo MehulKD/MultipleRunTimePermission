@@ -37,6 +37,22 @@ If the device is running Android 6.0 or higher, and your app's target SDK is 23 
 <h2>
 <a id="note-beginning-with-android-60-api-level-23-users-can-revoke-permissions-from-any-app-at-any-time-even-if-the-app-targets-a-lower-api-level-you-should-test-your-app-to-verify-that-it-behaves-properly-when-its-missing-a-needed-permission-regardless-of-what-api-level-your-app-targets" class="anchor" href="#note-beginning-with-android-60-api-level-23-users-can-revoke-permissions-from-any-app-at-any-time-even-if-the-app-targets-a-lower-api-level-you-should-test-your-app-to-verify-that-it-behaves-properly-when-its-missing-a-needed-permission-regardless-of-what-api-level-your-app-targets" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Note: Beginning with Android 6.0 (API level 23), users can revoke permissions from any app at any time, even if the app targets a lower API level. You should test your app to verify that it behaves properly when it's missing a needed permission, regardless of what API level your app targets</h2>
 
+<p><strong>Check For All Permissions at a time</strong></p>
+
+<pre><code>`int result;
+ List&lt;String&gt; listPermissionsNeeded = new ArrayList&lt;&gt;();
+ for (String p : permissions) {
+ result = ContextCompat.checkSelfPermission(getApplicationContext(), p);
+ if (result != PackageManager.PERMISSION_GRANTED) {
+ listPermissionsNeeded.add(p);
+ }
+ }
+if (!listPermissionsNeeded.isEmpty()) {
+ActivityCompat.requestPermissions(this,listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),    REQUEST_ID_MULTIPLE_PERMISSIONS);
+return false;
+}`
+</code></pre>
+
 <h1>
 <a id="output" class="anchor" href="#output" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Output:</h1>
 
